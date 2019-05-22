@@ -55,7 +55,7 @@ public class MainWindow extends javax.swing.JFrame {
         resultTable = new javax.swing.JTable();
 
         processingDialog.setTitle("Processing");
-        processingDialog.setMinimumSize(new java.awt.Dimension(400, 65));
+        processingDialog.setMinimumSize(new java.awt.Dimension(400, 90));
         processingDialog.setModal(true);
         processingDialog.setResizable(false);
         processingDialog.setType(java.awt.Window.Type.UTILITY);
