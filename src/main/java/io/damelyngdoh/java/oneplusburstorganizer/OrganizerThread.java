@@ -1,8 +1,7 @@
 /*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
+ * 
  */
+
 package io.damelyngdoh.java.oneplusburstorganizer;
 
 import java.io.File;
@@ -23,27 +22,43 @@ import org.apache.commons.io.FileUtils;
  */
 public class OrganizerThread extends SwingWorker<Void, Void>{
 	
-    private File srcDir;
-    private File destDir;
-    private final List<File> newDirs = new ArrayList<File>();
-    private final List<File> failedDirs = new ArrayList<File>();
+	/**
+	 * File variables for source and destination directory
+	 */
+    private File srcDir, destDir;
+    
+    /**
+     * Lists to hold newly created directories and directories which were unable to be created
+     */
+    private final List<File> newDirs = new ArrayList<File>(), 
+    		failedDirs = new ArrayList<File>();
+    
     private boolean loggingEnabled = true;
+    
+    /**
+     * Dialog in main application window to be visible while organizer thread is still running
+     */
     private final JDialog dialog;
+    
+    /**
+     * List to hold results of organizer thread
+     */
     private List<Result> results = new ArrayList<Result>();
 
+    /**
+     * 
+     * @param srcDir Source directory
+     * @param Destination directory
+     * @param Dialog in main application window to be visible during thread execution
+     */
     public OrganizerThread(File srcDir, File destDir, JDialog dialog) {
         this.setSrcDir(srcDir);
-        if(destDir!=null) {
-            this.setDestDir(destDir);
-        }
-        else {
-            this.setDestDir(srcDir);
-        }
+        this.destDir = destDir==null ? srcDir : destDir;
         this.dialog = dialog;
     }
 
     /**
-     * @return the srcDir
+     * @return the source directory
      */
     public File getSrcDir() {
         return srcDir;
@@ -57,7 +72,7 @@ public class OrganizerThread extends SwingWorker<Void, Void>{
     }
 
     /**
-     * @return the destDir
+     * @return the destination directory
      */
     public File getDestDir() {
         return destDir;
@@ -71,14 +86,14 @@ public class OrganizerThread extends SwingWorker<Void, Void>{
     }
 
     /**
-     * @return the newDirs
+     * @return the list of new directories created
      */
     public List<File> getNewDirs() {
         return newDirs;
     }
 
     /**
-     * @return the newDirs
+     * @return the list of directories failed to be created
      */
     public List<File> getFailedDirs() {
         return this.failedDirs;
@@ -98,11 +113,18 @@ public class OrganizerThread extends SwingWorker<Void, Void>{
         this.loggingEnabled = loggingEnabled;
     }
 
+    /**
+     * 
+     * @return the list of Result object
+     */
     public List<Result> getResults(){
         return this.results;
     }
     
-    private void log() {
+    /**
+     * Common method for logging
+     */
+    private void log(Object message, Throwable t, int type) {
         if(!this.loggingEnabled) {
             return;
         }
@@ -182,8 +204,8 @@ public class OrganizerThread extends SwingWorker<Void, Void>{
         this.dialog.setVisible(false);
     }
     
-    /*
-     * 
+    /**
+     * Filter class to select only files containing specific file name
      */
     class Filter implements FilenameFilter {
         public boolean accept(File dir, String name) {
