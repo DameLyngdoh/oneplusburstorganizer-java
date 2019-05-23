@@ -14,13 +14,36 @@
     <build>
     	<plugins>
     		<plugin>
+  				<groupId>org.apache.maven.plugins</groupId>
+  				<artifactId>maven-assembly-plugin</artifactId>
+  				<executions>
+					<execution>
+						<goals>
+							<goal>attached</goal>
+						</goals>
+						<phase>package</phase>
+						<configuration>
+							<descriptorRefs>
+								<descriptorRef>jar-with-dependencies</descriptorRef>
+							</descriptorRefs>
+							<archive>
+								<manifest>
+									<mainClass>io.damelyngdoh.java.oneplusburstorganizer.Main</mainClass>
+								</manifest>
+							</archive>
+						</configuration>
+					</execution>
+ 				</executions>
+			</plugin>
+    	
+    		<plugin>
     			<groupId>org.apache.maven.plugins</groupId>
     			<artifactId>maven-jar-plugin</artifactId>
     			<configuration>
     				<archive>
     					<manifest>
     						<addClasspath>true</addClasspath>
-    						<mainClass>io.damelyngdoh.java.oneplusburstorganizer.MainWindow</mainClass>
+    						<mainClass>io.damelyngdoh.java.oneplusburstorganizer.Main</mainClass>
     					</manifest>
     				</archive>
     			</configuration>
@@ -33,11 +56,13 @@
   		<groupId>commons-io</groupId>
   		<artifactId>commons-io</artifactId>
   		<version>2.6</version>
+  		<scope>compile</scope>
   	</dependency>
   	<dependency>
   		<groupId>commons-logging</groupId>
   		<artifactId>commons-logging</artifactId>
   		<version>1.2</version>
+  		<scope>compile</scope>
   	</dependency>
   </dependencies>
     <name>OnePlus Burst Organizer</name>
