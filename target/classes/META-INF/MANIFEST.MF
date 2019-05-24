@@ -3,5 +3,5 @@ Built-By: Dame
 Class-Path: commons-io-2.6.jar commons-logging-1.2.jar
 Build-Jdk: 1.8.0_211
 Created-By: Maven Integration for Eclipse
-Main-Class: io.damelyngdoh.java.oneplusburstorganizer.MainWindow
+Main-Class: io.damelyngdoh.java.oneplusburstorganizer.Main
 

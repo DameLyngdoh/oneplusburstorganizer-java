@@ -1,8 +1,3 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 package io.damelyngdoh.java.oneplusburstorganizer;
 
 import java.io.File;
@@ -10,15 +5,18 @@ import javax.swing.JFileChooser;
 import javax.swing.JOptionPane;
 
 /**
- *
- * @author Dame
+ * Swing GUI window for the application.
+ * 
+ * @author Dame Lyngdoh
+ * @version 1.0.0
+ * @since 2019-05-24
  */
 @SuppressWarnings("serial")
 public class MainWindow extends javax.swing.JFrame {
 
     private File srcDir = null, dstDir = null;
     private JFileChooser dirChooser = null;
-    private OrganizerThread organizer = null;
+    private OrganizerWorker organizer = null;
     
     /**
      * Creates new form MainWindow
@@ -244,7 +242,7 @@ public class MainWindow extends javax.swing.JFrame {
     }                                               
 
     private void processButtonActionPerformed(java.awt.event.ActionEvent evt) {                                              
-        organizer = new OrganizerThread(this.srcDir, this.dstDir, this.processingDialog);
+        organizer = new OrganizerWorker(this.srcDir, this.dstDir, this.processingDialog);
         organizer.execute();
         this.processingDialog.setVisible(true);
         this.resultTable.setModel(new TableModel(organizer.getResults()));

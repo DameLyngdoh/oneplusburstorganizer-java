@@ -1,20 +1,23 @@
-/**
- * 
- */
 package io.damelyngdoh.java.oneplusburstorganizer;
 
 import java.io.File;
 
 /**
- * @author Dame
- *
+ * This is the main class for the project.
+ * 
+ * @author Dame Lyngdoh
+ * @version 1.0.0
+ * @since 2019-05-24
  */
 public class Main {
 
 	/**
-	 * @param args
+	 * Main method for the project.
+	 * @param args Command line arguments
 	 */
 	public static void main(String[] args) {
+		
+		System.out.println(args.length);
 		
 		// Check for command line arguments
 		if(args.length==2 || (args.length==1 && args[0].equalsIgnoreCase("-h"))) {
@@ -53,16 +56,40 @@ public class Main {
 				return;
 			}
 			
-			OrganizerThread organizer = new OrganizerThread(src, dst, null);
+			OrganizerService organizer = new OrganizerService(src, dst);
+			organizer.organize();
 		}
 		
-		// Else use gui
+		// Else use graphical user-interface
 		else if (args.length==0){
-			
+			new MainWindow().setVisible(true);
 		}
 		else {
-			System.out.println("");
+			System.out.println("Usage: java -jar <organizer-jar-filename> source-directory [destination-directory]");
 		}
 	}
-
+	
+	/**
+	 * Returns a human readable message in String for a numerical status indicator
+	 * @param status the integer indicating the status
+	 * @return A String message of the status
+	 */
+	public static String getStatus(int status) {
+		String result = null;
+		switch(status){
+        case 1:
+            result = "Success";
+            break;
+        case 2:
+            result = "Could not create directory";
+            break;
+        case 3:
+            result = "Could not copy file to destination";
+            break;
+        case 4:
+            result = "Copy complete but ile not deleted";
+            break;
+		}
+		return result;
+	}
 }

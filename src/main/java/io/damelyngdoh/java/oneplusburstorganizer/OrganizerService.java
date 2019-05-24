@@ -1,6 +1,3 @@
-/*
- * 
- */
 
 package io.damelyngdoh.java.oneplusburstorganizer;
 
@@ -10,17 +7,19 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
-import javax.swing.JDialog;
-
-import javax.swing.SwingWorker;
 
 import org.apache.commons.io.FileUtils;
 
 /**
+ * Service class for organizing burst image files in source directory and organizes them in separate 
+ * directories within destination directory. Currently the supported burst image filename format is 
+ * IMG_<image-id>_<burst-id>_<sequence-id>.
+ * 
  * @author Dame Lyngdoh
- *
+ * @version 1.0.0
+ * @since 2019-05-24
  */
-public class OrganizerThread extends SwingWorker<Void, Void>{
+public class OrganizerService {
 	
 	/**
 	 * File variables for source and destination directory
@@ -33,31 +32,24 @@ public class OrganizerThread extends SwingWorker<Void, Void>{
     private final List<File> newDirs = new ArrayList<File>(), 
     		failedDirs = new ArrayList<File>();
     
-    private boolean loggingEnabled = true;
-    
-    /**
-     * Dialog in main application window to be visible while organizer thread is still running
-     */
-    private final JDialog dialog;
-    
     /**
      * List to hold results of organizer thread
      */
     private List<Result> results = new ArrayList<Result>();
 
     /**
-     * 
+     * Constructs new OrganizerService object with source and destination directories specified.
      * @param srcDir Source directory
      * @param Destination directory
      * @param Dialog in main application window to be visible during thread execution
      */
-    public OrganizerThread(File srcDir, File destDir, JDialog dialog) {
+    public OrganizerService(File srcDir, File destDir) {
         this.setSrcDir(srcDir);
         this.destDir = destDir==null ? srcDir : destDir;
-        this.dialog = dialog;
     }
 
     /**
+     * Returns the source directory for the service object.
      * @return the source directory
      */
     public File getSrcDir() {
@@ -65,6 +57,7 @@ public class OrganizerThread extends SwingWorker<Void, Void>{
     }
 
     /**
+     * Sets the source directory for the service object.
      * @param srcDir the srcDir to set
      */
     public void setSrcDir(File srcDir) {
@@ -72,6 +65,7 @@ public class OrganizerThread extends SwingWorker<Void, Void>{
     }
 
     /**
+     * Returns the destination directory for the service object.
      * @return the destination directory
      */
     public File getDestDir() {
@@ -79,6 +73,7 @@ public class OrganizerThread extends SwingWorker<Void, Void>{
     }
 
     /**
+     * Sets the destination directory for the service object.
      * @param destDir the destDir to set
      */
     public void setDestDir(File destDir) {
@@ -86,6 +81,7 @@ public class OrganizerThread extends SwingWorker<Void, Void>{
     }
 
     /**
+     * Returns the list of new directories created during the organization operation.
      * @return the list of new directories created
      */
     public List<File> getNewDirs() {
@@ -93,6 +89,7 @@ public class OrganizerThread extends SwingWorker<Void, Void>{
     }
 
     /**
+     * Returns the list of directories which were failed to be created.
      * @return the list of directories failed to be created
      */
     public List<File> getFailedDirs() {
@@ -100,38 +97,17 @@ public class OrganizerThread extends SwingWorker<Void, Void>{
     }
 
     /**
-     * @return the loggingEnabled
-     */
-    public boolean isLoggingEnabled() {
-        return loggingEnabled;
-    }
-
-    /**
-     * @param loggingEnabled the loggingEnabled to set
-     */
-    public void setLoggingEnabled(boolean loggingEnabled) {
-        this.loggingEnabled = loggingEnabled;
-    }
-
-    /**
-     * 
+     * Returns the result list for the service. Will be useful if called after organize method is called.
      * @return the list of Result object
      */
     public List<Result> getResults(){
         return this.results;
     }
-    
-    /**
-     * Common method for logging
-     */
-    private void log(Object message, Throwable t, int type) {
-        if(!this.loggingEnabled) {
-            return;
-        }
-    }
 
-    @Override
-    protected Void doInBackground() throws Exception {
+    /**
+     * Performs the organization operation using the specified source and destination directories.
+     */
+    public void organize() {
 
         // Listing all files in parent directory based on filter policy
         File[] files = this.srcDir.listFiles(new Filter());
@@ -154,10 +130,12 @@ public class OrganizerThread extends SwingWorker<Void, Void>{
                 // If directory creation successful add to newDir list
                 if(newDir.mkdir()) {
                     this.newDirs.add(newDir);
+                    System.out.println("Directory " + newDir.getName() + " created successfully.");
                 }
                 // Else add to failedDir list
                 else {
                     this.failedDirs.add(newDir);
+                    System.out.println("Directory " + newDir.getName() + " creation failed.");
                 }
             }
             else {
@@ -166,46 +144,48 @@ public class OrganizerThread extends SwingWorker<Void, Void>{
             batchArray.add(f);			
         }
 
+        System.out.println("Directory creation complete");
+        
         // Moving files to respective directory, only for newDir list
         for(File f : this.newDirs) {
             List<File> fileList = bucket.get(f.getName());
             for(File file : fileList) {
                 boolean success = true;
+                Result re = null;
                 // Copying file to new directory, preserving date
                 try {
                     FileUtils.copyFileToDirectory(file, f, true);
                 } catch (IOException e) {
-                    results.add(new Result(file, f, 3));
+                	re = new Result(file, f, 3);
                     success = false;
                 }
                 // Removing old file
                 try {
                     FileUtils.forceDelete(file);
                 } catch (IOException e) {
-                    results.add(new Result(file, f, 4));
-                    success = false;
+                    re = new Result(file, f, 4);
+                	success = false;
                 }
                 if (success) {
-                    results.add(new Result(file, f, 1));
+                    re = new Result(file, f, 1);
                 }
+                results.add(re);
+                System.out.println(re);
             }
         }
         for(File f : this.failedDirs) {
             List<File> fileList = bucket.get(f.getName());
             for(File file : fileList) {
-                results.add(new Result(file, f, 2));
+            	Result re = new Result(file, f, 2);
+            	results.add(re);
+            	System.out.println(re);
             }
         }
-        return null;
-    }
-	
-    @Override
-    protected void done() {
-        this.dialog.setVisible(false);
     }
     
     /**
      * Filter class to select only files containing specific file name
+     * @see FilenameFilter
      */
     class Filter implements FilenameFilter {
         public boolean accept(File dir, String name) {

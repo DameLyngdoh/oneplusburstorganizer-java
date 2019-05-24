@@ -1,6 +1,3 @@
-/**
- * 
- */
 package io.damelyngdoh.java.oneplusburstorganizer;
 
 import java.util.List;
@@ -8,8 +5,12 @@ import java.util.List;
 import javax.swing.table.AbstractTableModel;
 
 /**
+ * This class represents a table model using the result list 
+ * from the organizing operation.
+ * 
  * @author Dame Lyngdoh
- *
+ * @version 1.0.0
+ * @since 2019-05-24
  */
 @SuppressWarnings("serial")
 public class TableModel extends AbstractTableModel {
@@ -30,7 +31,7 @@ public class TableModel extends AbstractTableModel {
 
     @Override
     public String getColumnName(int column) {
-        String name = null;;
+        String name = null;
         switch(column) {
         case 0:
             name = "#";
@@ -66,20 +67,7 @@ public class TableModel extends AbstractTableModel {
             result = this.results.get(rowIndex).getDir().getPath();
             break;
         case 3:
-            switch(this.results.get(rowIndex).getStatus()){
-                case 1:
-                    result = "Success";
-                    break;
-                case 2:
-                    result = "Could not create directory";
-                    break;
-                case 3:
-                    result = "Could not copy file to destination";
-                    break;
-                case 4:
-                    result = "Copy complete but ile not deleted";
-                    break;
-            }
+            result = Main.getStatus(this.results.get(rowIndex).getStatus());
         }
         return result;
     }
